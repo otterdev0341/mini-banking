@@ -1,86 +1,90 @@
--- Enable foreign key constraints
-PRAGMA foreign_keys = ON;
-
--- Table: AssetType
+-- Create AssetType table
+/* done */
 CREATE TABLE AssetType (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Table: Asset
+/* done */
+-- Create Asset table
 CREATE TABLE Asset (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     asset_type_id INTEGER NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (asset_type_id) REFERENCES AssetType(id)
 );
 
--- Table: ExpenseType
+-- Create ExpenseType table
+/* done */
 CREATE TABLE ExpenseType (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Table: Expense
+-- Create Expense table
+/* done */
 CREATE TABLE Expense (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     description TEXT NOT NULL,
     expense_type_id INTEGER NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (expense_type_id) REFERENCES ExpenseType(id)
 );
 
--- Table: CustomerType
-CREATE TABLE CustomerType (
+/* done */
+-- Create ContactType table
+CREATE TABLE ContactType (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL CHECK(name IN ('Customer', 'Vendor')),
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    name TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- Table: Contact
+-- Create Contact table
+/* done */
 CREATE TABLE Contact (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    business_name TEXT,
-    phone TEXT,
+    business_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
     description TEXT,
-    customer_type_id INTEGER NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    FOREIGN KEY (customer_type_id) REFERENCES CustomerType(id)
+    contact_type_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (contact_type_id) REFERENCES ContactType(id)
 );
 
--- Table: Transaction
-CREATE TABLE Transaction (
+-- Create TransactionRecord table
+/* done */
+CREATE TABLE TransactionRecord (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    transaction_type TEXT NOT NULL CHECK(transaction_type IN ('Income', 'Payment', 'Transfer')),
-    amount DECIMAL(10,2) NOT NULL,
+    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('Income', 'Payment', 'Transfer')),
+    amount REAL NOT NULL,
     asset_id INTEGER NOT NULL,
     destination_asset_id INTEGER,
     expense_id INTEGER,
     contact_id INTEGER,
     note TEXT,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (asset_id) REFERENCES Asset(id),
     FOREIGN KEY (destination_asset_id) REFERENCES Asset(id),
     FOREIGN KEY (expense_id) REFERENCES Expense(id),
     FOREIGN KEY (contact_id) REFERENCES Contact(id)
 );
 
--- Table: CurrentSheet
+-- Create CurrentSheet table
 CREATE TABLE CurrentSheet (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     asset_id INTEGER NOT NULL,
-    balance DECIMAL(10,2) NOT NULL,
-    updated_at DATETIME NOT NULL,
+    balance REAL NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (asset_id) REFERENCES Asset(id)
 );
