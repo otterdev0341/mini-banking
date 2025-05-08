@@ -3,6 +3,7 @@ use crate::domain::model::asset_type::{AssetType, NewAssetType};
 use crate::domain::repositories::asset_type::{AssetTypeRepository, AssetTypeError};
 use crate::domain::dto::asset_type::{NewAssetTypeDto, ResAssetTypeDto};
 
+#[derive(Debug, Clone)]
 pub struct AssetTypeUseCase<R: AssetTypeRepository> {
     repository: R,
 }

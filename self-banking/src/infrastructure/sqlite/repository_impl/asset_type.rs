@@ -1,11 +1,12 @@
 use async_trait::async_trait;
 use diesel::prelude::*;
-use diesel::result::Error;
+use diesel::result::Error as DieselError;
 use crate::domain::model::asset_type::{AssetType, NewAssetType};
-use crate::domain::repositories::asset_type::AssetTypeRepository;
+use crate::domain::repositories::asset_type::{AssetTypeRepository, AssetTypeError};
 use crate::domain::entities::schema::AssetType as AssetTypeTable;
-use crate::infrastructure::sqlite::sqlite_connection::SqliteConnection;
+use crate::infrastructure::sqlite::sqlite_connection::{SqliteConnection, ConnectionError};
 
+#[derive(Debug, Clone)]
 pub struct AssetTypeRepositoryImpl {
     connection: SqliteConnection,
 }
@@ -18,8 +19,12 @@ impl AssetTypeRepositoryImpl {
 
 #[async_trait]
 impl AssetTypeRepository for AssetTypeRepositoryImpl {
-    async fn create(&self, new_asset_type: NewAssetType) -> Result<AssetType, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn create(&self, new_asset_type: NewAssetType) -> Result<AssetType, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         conn.transaction(|conn| {
             // Check if name already exists
@@ -29,7 +34,7 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
                 .get_result::<i64>(conn)?;
 
             if exists > 0 {
-                return Err(Error::NotFound);
+                return Err(DieselError::NotFound);
             }
 
             // Insert new asset type
@@ -44,8 +49,12 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
         })
     }
 
-    async fn get_by_id(&self, id: i32) -> Result<Option<AssetType>, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn get_by_id(&self, id: i32) -> Result<Option<AssetType>, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         AssetTypeTable::table
             .filter(AssetTypeTable::id.eq(id))
@@ -53,16 +62,24 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
             .optional()
     }
 
-    async fn get_all(&self) -> Result<Vec<AssetType>, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn get_all(&self) -> Result<Vec<AssetType>, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         AssetTypeTable::table
             .order_by(AssetTypeTable::name)
             .load::<AssetType>(conn)
     }
 
-    async fn update(&self, id: i32, asset_type: NewAssetType) -> Result<AssetType, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn update(&self, id: i32, asset_type: NewAssetType) -> Result<AssetType, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         conn.transaction(|conn| {
             // Check if asset type exists
@@ -72,7 +89,7 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
                 .get_result::<i64>(conn)?;
 
             if exists == 0 {
-                return Err(Error::NotFound);
+                return Err(DieselError::NotFound);
             }
 
             // Check if name already exists for other records
@@ -83,7 +100,7 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
                 .get_result::<i64>(conn)?;
 
             if name_exists > 0 {
-                return Err(Error::NotFound);
+                return Err(DieselError::NotFound);
             }
 
             // Update the asset type
@@ -98,8 +115,12 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
         })
     }
 
-    async fn delete(&self, id: i32) -> Result<bool, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn delete(&self, id: i32) -> Result<bool, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         // Check if asset type exists
         let exists = AssetTypeTable::table
@@ -108,7 +129,7 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
             .get_result::<i64>(conn)?;
 
         if exists == 0 {
-            return Err(Error::NotFound);
+            return Err(DieselError::NotFound);
         }
 
         let deleted = diesel::delete(AssetTypeTable::table)
@@ -118,8 +139,12 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
         Ok(deleted > 0)
     }
 
-    async fn find_by_name(&self, name: &str) -> Result<Vec<AssetType>, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn find_by_name(&self, name: &str) -> Result<Vec<AssetType>, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         AssetTypeTable::table
             .filter(AssetTypeTable::name.like(format!("%{}%", name)))
@@ -127,8 +152,12 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
             .load::<AssetType>(conn)
     }
 
-    async fn exists(&self, id: i32) -> Result<bool, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn exists(&self, id: i32) -> Result<bool, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         let count = AssetTypeTable::table
             .filter(AssetTypeTable::id.eq(id))
@@ -138,8 +167,12 @@ impl AssetTypeRepository for AssetTypeRepositoryImpl {
         Ok(count > 0)
     }
 
-    async fn count(&self) -> Result<i64, Error> {
-        let conn = &mut self.connection.get_connection();
+    async fn count(&self) -> Result<i64, DieselError> {
+        let conn = &mut self.connection.get_connection()
+            .map_err(|e| DieselError::DatabaseError(
+                diesel::result::DatabaseErrorKind::Unknown,
+                Box::new(e.to_string()),
+            ))?;
         
         AssetTypeTable::table
             .count()

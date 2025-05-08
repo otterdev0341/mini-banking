@@ -4,7 +4,7 @@ use chrono::Utc;
 use crate::domain::dto::asset_type::{NewAssetTypeDto, ResAssetTypeDto};
 use crate::domain::repositories::asset_type::{AssetTypeError, AssetTypeValidation};
 
-#[derive(Debug, Clone, Queryable, Selectable, Serialize, Deserialize)]
+#[derive(Debug, Clone, Queryable, Selectable, Serialize, Deserialize, Identifiable)]
 #[diesel(table_name = crate::domain::entities::schema::AssetType)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct AssetType {
