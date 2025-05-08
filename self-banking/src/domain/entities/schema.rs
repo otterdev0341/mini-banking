@@ -45,7 +45,7 @@ diesel::table! {
     CurrentSheet (id) {
         id -> Nullable<Integer>,
         asset_id -> Integer,
-        balance -> Float,
+        balance -> Double,
         updated_at -> Text,
     }
 }
@@ -73,7 +73,7 @@ diesel::table! {
     TransactionRecord (id) {
         id -> Nullable<Integer>,
         transaction_type -> Text,
-        amount -> Float,
+        amount -> Double,
         asset_id -> Integer,
         destination_asset_id -> Nullable<Integer>,
         expense_id -> Nullable<Integer>,
@@ -86,10 +86,7 @@ diesel::table! {
 
 diesel::joinable!(Asset -> AssetType (asset_type_id));
 diesel::joinable!(Contact -> ContactType (contact_type_id));
-diesel::joinable!(CurrentSheet -> Asset (asset_id));
 diesel::joinable!(Expense -> ExpenseType (expense_type_id));
-diesel::joinable!(TransactionRecord -> Contact (contact_id));
-diesel::joinable!(TransactionRecord -> Expense (expense_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     Asset,
