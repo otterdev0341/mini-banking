@@ -7,9 +7,12 @@ edition = "2024"
 rmcp = { version = "0.1.5", features = ["server"] }
 tokio = { version = "1.45.0", features = ["full"] }
 serde = {version = "1.0.219", features = ["derive"]}
-
-diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+async-trait = "0.1.88"
+diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35", "r2d2"] }
+r2d2 = "0.8.10"
 
 dotenv = "0.15.0"
 thiserror = "2.0.12"
 validator = {version = "0.20.0", features = ["derive"]}
+
+chrono = { version = "0.4.41", features = ["serde"] }
