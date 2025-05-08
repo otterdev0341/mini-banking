@@ -1,0 +1,47 @@
+#to create new migrate
+sea migrate generate -d <path of migration dir> <migrate name>
+
+# use
+sea migrate generate -d \
+/home/otterdev_ball/BaseDiskProject/rust_project/mini-banking/self-banking/src/domain/migration \
+name_here
+
+
+#to generate entity
+sea generate entity -o <output dir> -u <database url>
+
+#use
+sea generate entity \
+    -u mysql://db_admin:password@192.168.1.60:3306/note_tag_db \
+    -o src/domain/entities
+
+
+open api spec :
+http://localhost:8000/openapi.json
+
+
+#sql command to use when migrator table
+# if not use thoose command user can't be create bec fk relation
+insert into gender (id, detail) values (0,'male');
+insert into gender (id, detail) values (0, 'female');
+
+insert into role (id, role_name) values (0, 'user');
+insert into role (id, role_name) values (0, 'admin');
+
+insert into account_status (id, status_detail) values (0, 'active');
+insert into account_status (id, status_detail) values (0, 'inactive');
+
+INSERT INTO note_hex_color (hex_color) VALUES
+('#DFFF00'),
+('#FFBF00'),
+('#FF7F50'),
+('#DE3163'),
+('#9FE2BF'),
+('#40E0D0'),
+('#6495ED'),
+('#CCCCFF'),
+('#DADADA');
+
+insert into note_status (status_detail) values 
+('active'),
+('inactive');
