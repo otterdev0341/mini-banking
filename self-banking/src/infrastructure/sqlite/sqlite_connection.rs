@@ -1,4 +1,3 @@
-use diesel::prelude::*;
 use diesel::r2d2::{self, ConnectionManager, Pool};
 use std::env;
 use dotenv::dotenv;
